@@ -11,45 +11,69 @@ class Snake {
         if (this.body.length > 1) {
             let currentDir = this.direction
             if (currentDir.x + newX === 0 && currentDir.y + newY === 0) {
-                return;
+                return
             }
         }
-        this.direction = { x: newX, y: newY };
+        this.direction = { x: newX, y: newY }
     }
 
-    move(cols, rows) {
-        if (this.alive == false) {
+    move(cols, rows, wrapAround) {
+        if (this.alive == false){
             return
-        }
+        } 
+    
         let head = this.body[0];
-        let newHead = { x: head.x + this.direction.x, y: head.y + this.direction.y };
-        this.body.unshift(newHead);
-
-        if (this.growUp > 0) {
-            this.growUp--;
+        let newX = head.x + this.direction.x
+        let newY = head.y + this.direction.y
+    
+        if (wrapAround) {
+            if (newX < 0) {
+                newX = cols - 1
+            }
+            if (newX >= cols) {
+                newX = 0
+            }
+            if (newY < 0) {
+                newY = rows - 1
+            }
+            if (newY >= rows) {
+                newY = 0
+            }
         } else {
-            this.body.pop();
+            if (newX < 0 || newX >= cols || newY < 0 || newY >= rows) {
+                this.alive = false
+                return
+            }
         }
-
-        if (newHead.x < 0 || newHead.x >= cols || newHead.y < 0 || newHead.y >= rows) {
-            this.alive = false;
+    
+        let newHead = { x: newX, y: newY }
+        this.body.unshift(newHead)
+    
+        if (this.growUp > 0) {
+            this.growUp--
+        } else {
+            this.body.pop()
         }
-
+    
         for (let i = 1; i < this.body.length; i++) {
             if (this.body[i].x === newHead.x && this.body[i].y === newHead.y) {
-                this.alive = false;
+                this.alive = false
             }
         }
     }
+    
 
     grow(n) {
         this.growUp += n
     }
 
     shrink(n) {
-        for (let i = 0; i < n; i++){
+        for (let i = 0; i < n; i++) {
             if (this.body.length > 1) {
-                this.body.pop();
+                this.body.pop()
+            }else {
+                this.alive = false
+                return
             }
         }
     }
